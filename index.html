@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dino Jump Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #game-container {
+            background: #f7f7f7;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        #dino {
+            width: 50px;
+            height: 50px;
+            background: #666;
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+        }
+
+        .obstacle {
+            width: 20px;
+            height: 50px;
+            background: #333;
+            position: absolute;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="dino"></div>
+    </div>
+    <script>
+        const dino = document.getElementById('dino');
+        const gameContainer = document.getElementById('game-container');
+        let isJumping = false;
+
+        function jump() {
+            if (!isJumping) {
+                isJumping = true;
+                let position = 0;
+
+                const jumpInterval = setInterval(() => {
+                    if (position >= 150) {
+                        clearInterval(jumpInterval);
+                        const fallInterval = setInterval(() => {
+                            if (position <= 0) {
+                                clearInterval(fallInterval);
+                                isJumping = false;
+                            } else {
+                                position -= 10;
+                                dino.style.bottom = position + 'px';
+                            }
+                        }, 20);
+                    } else {
+                        position += 10;
+                        dino.style.bottom = position + 'px';
+                    }
+                }, 20);
+            }
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                jump();
+            }
+        });
+
+        function createObstacle() {
+            const obstacle = document.createElement('div');
+            obstacle.classList.add('obstacle');
+            gameContainer.appendChild(obstacle);
+
+            let obstaclePosition = 1000;
+            obstacle.style.left = obstaclePosition + 'px';
+
+            const obstacleMoveInterval = setInterval(() => {
+                if (obstaclePosition < -20) {
+                    clearInterval(obstacleMoveInterval);
+                    gameContainer.removeChild(obstacle);
+                } else if (obstaclePosition > 0 && obstaclePosition < 60 && dino.style.bottom == '0px') {
+                    alert('Game Over!');
+                    clearInterval(obstacleMoveInterval);
+                    document.location.reload();
+                } else {
+                    obstaclePosition -= 10;
+                    obstacle.style.left = obstaclePosition + 'px';
+                }
+            }, 20);
+
+            setTimeout(createObstacle, 3000);
+        }
+
+        createObstacle();
+    </script>
+</body>
+</html>
